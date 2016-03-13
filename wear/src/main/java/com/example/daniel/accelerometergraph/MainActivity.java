@@ -11,6 +11,7 @@ import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -49,7 +50,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         mClockView = (TextView) findViewById(R.id.clock);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         Log.e("UPDATE", "ON CREATE");
 
@@ -58,7 +59,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-        mGoogleApiClient.connect();
+        mGoogleApiClient.disconnect();
     }
 
     @Override
@@ -78,6 +79,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         super.onPause();
         mSensorManager.unregisterListener(this,mSensor);
         mGoogleApiClient.disconnect();
+        Log.d("API", "DISCONNECTED");
     }
 
     @Override
@@ -85,7 +87,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         Log.e("UPDATE", String.format("x:%f, y:%f, z:%f", event.values[0], event.values[1], event.values[2]));
 
         long referenceTimestamp = System.currentTimeMillis() + ((event.timestamp - SystemClock.elapsedRealtimeNanos())/1000000L);
-        sendAccelerometerData(event.values[0], event.values[1], event.values[2],referenceTimestamp);
+        sendAccelerometerData(event.values[0], event.values[1], event.values[2], referenceTimestamp);
     }
 
     private void sendAccelerometerData(float x, float y, float z, long timestamp) {
@@ -160,5 +162,19 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     public void onConnectionSuspended(int cause) {
         Log.d(TAG, "onConnectionSuspended: " + cause);
+    }
+
+    public void toggle (View v){
+        Log.d("@@@@@@@","TOGGLE");
+        Button button = (Button) findViewById(R.id.button);
+        if(mGoogleApiClient.isConnected()){
+            button.setText("OFF");
+            mSensorManager.unregisterListener(this, mSensor);
+            mGoogleApiClient.disconnect();
+        }else{
+            button.setText("ON");
+            mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            mGoogleApiClient.connect();
+        }
     }
 }

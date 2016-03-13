@@ -13,6 +13,12 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.WearableListenerService;
 
 public class MyService extends WearableListenerService {
+//Service is created everytime we get new data
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("YOLO", "THE SERVICE WAS JUST CREATED");
+    }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {

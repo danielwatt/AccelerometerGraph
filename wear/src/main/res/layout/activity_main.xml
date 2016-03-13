@@ -23,4 +23,11 @@
         android:textColor="@android:color/white"
         app:layout_box="all" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="ON"
+        android:id="@+id/button"
+        android:onClick="toggle" />
+
 </android.support.wearable.view.BoxInsetLayout>
